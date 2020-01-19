@@ -1,0 +1,412 @@
+package data;
+
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.Vector;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JScrollPane;
+
+public class xxxxx extends JFrame {
+
+	private JPanel contentPane;
+	private JTable table;
+	public Connection connection;
+	/**
+	 * Launch the application.
+	 */
+	private static String url = "jdbc:sqlserver://SEVEN7-PC\\MYSQL2014;DatabaseName=Grade";
+	private static final String user ="sa";
+	private static final String pass ="1234";
+	private Vector<String> columnName = new Vector<String>();
+	private Vector<Vector> data = new Vector<Vector>();
+	public static void main(String[] args) {
+	
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+				/*	xxxxx frame = new xxxxx();
+					frame.setVisible(true);
+					frame.pack();*/
+				
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	private void Connect() throws IOException
+	{
+		
+		 try {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver").newInstance();
+		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 
+			try {
+				connection = DriverManager.getConnection(url, user, pass);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+	}
+	/**
+	 * Create the frame.
+	 */
+	public xxxxx(String ii, String yy,String selectedName) {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 618, 300);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		
+	
+		JScrollPane scrollPane = new JScrollPane();
+		GroupLayout gl_contentPane = new GroupLayout(contentPane);
+		gl_contentPane.setHorizontalGroup(
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
+				.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 592, Short.MAX_VALUE)
+		);
+		gl_contentPane.setVerticalGroup(
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 252, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+		);
+		
+	
+		
+
+		
+		System.out.print(ii+"");
+	//	String que="select  avg(grade) from lie where term = '" + comboBox.getItem()+ + "' and year = " + textField_1.getText() + ";";
+		String q="select takes.id, takes.semester,takes.year, course.title,takes.grade,course.credits ,"
+				+ "  takes.course_id\r\n" + 
+				"from takes,course \r\n" + 
+				"where takes.course_id=course.course_id  "
+				+ "and takes.ID= "+ii+" and takes.year="+yy+" and takes.semester='"+selectedName+"';"
+				;
+	
+		
+		try {
+			Connect();
+			java.sql.Statement stm= connection.createStatement();
+			ResultSet result= stm.executeQuery(q);
+			ResultSetMetaData md=result.getMetaData();
+			int column =md.getColumnCount();
+			
+			for(int i=1;i<=column;i++) {
+				columnName.addElement(md.getColumnName(i));
+				
+			}
+	
+	while(result.next()) {
+		Vector<Object> row = new Vector<Object>(column);
+		for(int i=1;i<=column;i++) {
+			row.addElement(result.getObject(i));
+			System.out.println(result.getObject(i));
+		//break;
+			
+			
+		}
+		data.addElement(row);	
+	}
+	
+			JTable table =null;
+			table = new JTable(data,columnName);
+/*			table.setModel(new DefaultTableModel(
+				new Object[][] {
+					
+				},
+				new String[] {
+						
+				}
+			));*/
+			JFrame frame1 = new JFrame("");
+			frame1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			scrollPane.setViewportView(table);
+			contentPane.setLayout(gl_contentPane);
+			frame1.add(scrollPane, BorderLayout.CENTER);
+			
+	
+} catch (SQLException e) {
+	// TODO Auto-generated catch block
+	e.printStackTrace();
+} catch (IOException e) {
+	// TODO Auto-generated catch block
+	e.printStackTrace();
+}
+
+}}
+
+
+
+package data;
+
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.JComboBox;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.Vector;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
+public class database extends JFrame {
+
+	public JPanel contentPane;
+	public JTextField textField;
+	public JTextField textField_1;
+	public Connection connection;
+	public String ii;
+	public String selectedName;
+	public String yy;
+	/**
+	 * Launch the application.
+	 */
+	private static String url = "jdbc:sqlserver://SEVEN7-PC\\MYSQL2014;DatabaseName=lie";
+	private static final String user ="sa";
+	private static final String pass ="1234";
+	public Vector<String> columnName = new Vector<String>();
+	public Vector<Vector<Object>> data = new Vector<Vector<Object>>();
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					database frame = new database();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	private void Connect() throws IOException
+	{
+		
+		 try {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver").newInstance();
+		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 
+			try {
+				connection = DriverManager.getConnection(url, user, pass);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+	}
+	/**
+	 * Create the frame.
+	 */
+	public database() {
+		setTitle("list");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 450, 300);
+	
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		
+		JPanel panel = new JPanel();
+		GroupLayout gl_contentPane = new GroupLayout(contentPane);
+		try {
+			Connect();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		gl_contentPane.setHorizontalGroup(
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
+				.addComponent(panel, GroupLayout.DEFAULT_SIZE, 424, Short.MAX_VALUE)
+		);
+		gl_contentPane.setVerticalGroup(
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
+				.addComponent(panel, GroupLayout.DEFAULT_SIZE, 252, Short.MAX_VALUE)
+		);
+		
+		JLabel lblId = new JLabel("ID:");
+		
+		textField = new JTextField();
+		textField.setColumns(10);
+		textField.addKeyListener(new KeyAdapter(){
+			public void keyTyped(KeyEvent e) {
+				char c=e.getKeyChar();
+				if(!((c>='0')&&(c<='9')||
+						(c==KeyEvent.VK_BACK_SPACE)||
+						(c==KeyEvent.VK_DELETE))) {
+					getToolkit().beep();
+					e.consume();
+				}
+			}
+		});
+		
+		JLabel lblNewLabel = new JLabel("semester:");
+		
+		JComboBox comboBox = new JComboBox();
+		//comboBox.setModel(new DefaultComboBoxModel(new String[] {"Spring", "Fall", "Summer"}));
+		comboBox.addItem("Spring");
+		comboBox.addItem("Fall");
+		comboBox.setVisible(true);
+		JLabel lblYear = new JLabel("year:");
+		JFrame mainFrame = new JFrame("JComboBox Demo"); 
+		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		
+		textField_1 = new JTextField();
+		textField_1.setColumns(10);
+		textField_1.getText();
+		textField_1.addKeyListener(new KeyAdapter(){
+			public void keyTyped(KeyEvent e) {
+				char c=e.getKeyChar();
+				if(!((c>='0')&&(c<='9')||
+						(c==KeyEvent.VK_BACK_SPACE)||
+						(c==KeyEvent.VK_DELETE))) {
+					getToolkit().beep();
+					e.consume();
+				}
+			}
+		});
+		System .out.print(textField_1.getText());
+		//String que="select  avg(grade) from lie where term = '" + comboBox.getItemCount()+ + "' and year = " + textField_1.getItem + ";";
+		JButton btnFind = new JButton("Find");
+		//String yeer=textField_1.getText();
+		//String seem= comboBox.getSelectedItem().toString();
+			
+				//JOptionPane.showMessageDialog(mainFrame,selectedName);
+		
+		btnFind.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					 ii=textField.getText();
+						System.out.print(ii);
+						 selectedName = comboBox.getSelectedItem().toString();
+						System.out.print(selectedName);
+						 yy=textField_1.getText();
+						System.out.print(yy);
+						
+					xxxxx frame = new xxxxx(ii,yy,selectedName);
+		
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+				
+			}
+		});;	
+		String grade="with vv as(\r\n" + 
+				"select TOP 50 ID, grade ,(case \r\n" + 
+				"				when grade='A+' then 20   \r\n" + 
+				"				when grade='A' then 19 \r\n" + 
+				"				when grade='A-' then 18 \r\n" + 
+				"				when grade='B+' then 17 \r\n" + 
+				"				when grade='B' then 16\r\n" + 
+				"				when grade='B-' then 15\r\n" + 
+				"			    when grade='C+' then 14 \r\n" + 
+				"				when grade='C' then 13 \r\n" + 
+				"				when grade='C-' then 12 \r\n" + 
+				"				end) as num \r\n" + 
+				"				from takes\r\n" + 
+				"				where ID=1000 \r\n" + 
+				"				)   select ID,AVG(num) from vv WHERE ID=ii;";
+		
+	
+		
+		//System.out.print();
+		JButton btnCancel = new JButton("Cancel");
+		btnCancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {	
+				
+			}
+		});
+		GroupLayout gl_panel = new GroupLayout(panel);
+		gl_panel.setHorizontalGroup(
+			gl_panel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel.createSequentialGroup()
+					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panel.createSequentialGroup()
+							.addGap(41)
+							.addComponent(lblId)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_panel.createSequentialGroup()
+							.addContainerGap()
+							.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
+								.addComponent(lblNewLabel)
+								.addComponent(lblYear))
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+								.addComponent(textField_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
+					.addContainerGap(276, Short.MAX_VALUE))
+				.addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup()
+					.addContainerGap(77, Short.MAX_VALUE)
+					.addComponent(btnCancel)
+					.addGap(73)
+					.addComponent(btnFind)
+					.addGap(132))
+		);
+		gl_panel.setVerticalGroup(
+			gl_panel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel.createSequentialGroup()
+					.addGap(44)
+					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblId)
+						.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addGap(26)
+					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblNewLabel)
+						.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addGap(29)
+					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
+						.addComponent(textField_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblYear))
+					.addGap(41)
+					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
+						.addComponent(btnFind)
+						.addComponent(btnCancel))
+					.addContainerGap(29, Short.MAX_VALUE))
+		);
+		panel.setLayout(gl_panel);
+		contentPane.setLayout(gl_contentPane);
+	}
+}
